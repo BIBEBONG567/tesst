@@ -1,18 +1,41 @@
 let TOKEN = null;
 
 async function login() {
-  const r = await fetch('/api/admin/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: document.getElementById('user').value, password: document.getElementById('pass').value }) });
-  if (!r.ok) return alert('Sai tài khoản hoặc mật khẩu');
-  TOKEN = (await r.json()).token;
-  document.getElementById('login-section').style.display = 'none';
-  document.getElementById('panel').style.display = 'block';
-  refreshKeys(); refreshPayloads();
+  const user = document.getElementById('user').value;
+  const pass = document.getElementById('pass').value;
+
+  try {
+    const r = await fetch('/api/admin/login', { 
+      method: 'POST', 
+      headers: { 'Content-Type': 'application/json' }, 
+      body: JSON.stringify({ username: user, password: pass }) 
+    });
+    
+    if (!r.ok) {
+      const err = await r.json();
+      return alert('Đăng nhập thất bại: ' + (err.error || 'Sai tài khoản hoặc mật khẩu'));
+    }
+    
+    TOKEN = (await r.json()).token;
+    document.getElementById('login-section').style.display = 'none';
+    document.getElementById('panel').style.display = 'block';
+    refreshKeys(); refreshPayloads();
+  } catch (error) {
+    alert('Lỗi kết nối tới Server!');
+  }
 }
 
 function authHeaders() { return { 'Authorization': 'Bearer ' + TOKEN }; }
 
 async function genKeys() {
-  const r = await fetch('/api/admin/keys', { method: 'POST', headers: { 'Content-Type': 'application/json', ...authHeaders() }, body: JSON.stringify({ days: parseInt(document.getElementById('days').value), count: parseInt(document.getElementById('count').value) }) });
+  const r = await fetch('/api/admin/keys', { 
+    method: 'POST', 
+    headers: { 'Content-Type': 'application/json', ...authHeaders() }, 
+    body: JSON.stringify({ 
+      days: parseInt(document.getElementById('days').value), 
+      count: parseInt(document.getElementById('count').value) 
+    }) 
+  });
   document.getElementById('out-keys').innerHTML = `<div class="out">${(await r.json()).keys.join('\n')}</div>`;
   refreshKeys();
 }
@@ -83,7 +106,9 @@ async function assignPayload(keyId) {
 }
 
 async function uploadPayload() {
-  const fd = new FormData(); fd.append('name', document.getElementById('pname').value || 'payload'); fd.append('file', document.getElementById('pfile').files[0]);
+  const fd = new FormData(); 
+  fd.append('name', document.getElementById('pname').value || 'payload'); 
+  fd.append('file', document.getElementById('pfile').files[0]);
   const r = await fetch('/api/admin/payload', { method: 'POST', headers: authHeaders(), body: fd });
   if (r.ok) { alert('Tải lên thành công'); refreshPayloads(); } else alert('Tải lên thất bại');
 }
