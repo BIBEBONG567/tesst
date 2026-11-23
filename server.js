@@ -165,6 +165,4 @@ app.get('/api/payload/:id', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[license-server] running on port ${PORT}`);
-});
+app.listen(PORT, '0.0.0.0', () => console.log(`[license-server] http://localhost:${PORT}`));
