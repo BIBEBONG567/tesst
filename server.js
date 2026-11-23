@@ -167,3 +167,38 @@ app.get('/api/payload/:id', (req, res) => {
 
 // SỬA LẠI DÒNG NÀY: Lắng nghe trên 0.0.0.0 để Render có thể truy cập
 app.listen(PORT, '0.0.0.0', () => console.log(`[license-server] running on port ${PORT}`));
+// ==========================================
+// THÊM 2 API DƯỚI ĐÂY VÀO SERVER.JS CỦA BẠN
+// ==========================================
+
+// 1. API Lấy toàn bộ danh sách EXE (Dành cho Discord Bot)
+app.get('/api/admin/payloads', (req, res) => {
+    // Bạn có thể thêm check quyền Admin ở đây nếu cần
+    try {
+        const payloads = db.prepare('SELECT id, name FROM payloads WHERE active = 1 ORDER BY id DESC').all();
+        res.json(payloads);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// 2. API Gán EXE vào Key (Dành cho Discord Bot)
+app.post('/api/admin/keys/:key/assign-exe', (req, res) => {
+    // Bạn có thể thêm check quyền Admin ở đây nếu cần
+    const keyCode = req.params.key;
+    const exeId = req.body.exe_id;
+
+    try {
+        // Tìm ID của Key trong database
+        const license = db.prepare('SELECT id FROM licenses WHERE `key` = ?').get(keyCode);
+        if (!license) return res.status(404).json({ error: 'Key không tồn tại' });
+
+        // Gán file EXE vào Key (Lưu vào bảng key_payloads)
+        // Dùng INSERT OR IGNORE để không bị lỗi nếu gán trùng
+        db.prepare('INSERT OR IGNORE INTO key_payloads (license_id, payload_id) VALUES (?, ?)').run(license.id, exeId);
+
+        res.json({ success: true, message: 'Gán EXE thành công' });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
