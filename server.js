@@ -12,7 +12,7 @@ const app = express();
 const PORT = process.env.PORT || 3000; 
 const JWT_SECRET = 'CHANGE_THIS_SECRET_IN_PROD_9f3a2c';
 const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'admin123'; 
+const ADMIN_PASS = '123321'; 
 
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir);
