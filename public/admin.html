@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Quản Trị Viên Giấy Phép</title>
+<style>
+  :root { --bg: #1a1614; --panel: #221d1a; --ink: #e8e0d8; --muted: #8a7e72; --accent: #c96f3a; --line: #322a25; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 48px 32px; background: var(--bg); color: var(--ink); font-family: 'Segoe UI', sans-serif; font-size: 14px; max-width: 1080px; margin: 0 auto; }
+  h1 { font-weight: 400; font-size: 26px; margin: 0 0 4px; }
+  .sub { color: var(--muted); font-size: 12px; margin-bottom: 32px; }
+  section { margin-bottom: 40px; }
+  h2 { font-size: 11px; font-weight: 600; text-transform: uppercase; color: var(--muted); margin: 0 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; }
+  input, button, select { font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 4px; padding: 8px 12px; }
+  button { cursor: pointer; background: var(--accent); color: #1a1614; font-weight: 600; }
+  button.quiet { background: transparent; color: var(--ink); }
+  button.danger { background: transparent; color: #c96f3a; border-color: #5a3423; }
+  .row { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-size: 11px; text-transform: uppercase; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+  td { padding: 10px; border-bottom: 1px solid var(--line); }
+  code { font-family: Consolas, monospace; color: #d8a878; font-size: 12px; }
+  .badge { padding: 2px 8px; font-size: 11px; border-radius: 2px; }
+  .ok { color: #7a9a4a; border: 1px solid #3a4a2a; }
+  .off { color: #8a7e72; border: 1px solid var(--line); }
+  .out { background: var(--panel); padding: 14px; border-left: 2px solid var(--accent); font-family: Consolas, monospace; font-size: 12px; margin-top: 12px; white-space: pre-wrap; color: #d8a878; }
+</style>
+</head>
+<body>
+<h1>Quản Trị Viên Giấy Phép</h1>
+<div class="sub">Tạo khóa · Liên kết HWID · Quản lý dữ liệu</div>
+
+<section id="login-section">
+  <h2>Đăng nhập</h2>
+  <div class="row">
+    <input id="user" placeholder="Tài khoản" value="admin">
+    <input id="pass" placeholder="Mật khẩu" type="password">
+    <button onclick="login()">Đăng nhập</button>
+  </div>
+</section>
+
+<div id="panel" style="display:none">
+  <section>
+    <h2>Tạo khóa</h2>
+    <div class="row">
+      <input id="days" type="number" value="30" style="width:100px"> <span style="color:var(--muted)">ngày</span>
+      <input id="count" type="number" value="5" style="width:80px"> <span style="color:var(--muted)">số lượng</span>
+      <button onclick="genKeys()">Tạo</button>
+    </div>
+    <div id="out-keys"></div>
+  </section>
+
+  <section>
+    <h2>
+      Danh sách Khóa
+      <button class="danger" onclick="purgeRevokedKeys()" style="font-size:11px; padding:4px 8px;">Dọn dẹp Key đã thu hồi</button>
+    </h2>
+    <table id="keys-table">
+      <thead><tr><th>Key</th><th>HWID</th><th>Hết hạn</th><th>Trạng thái</th><th>Hành động</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Tải lên File EXE (Payload)</h2>
+    <div class="row">
+      <input id="pname" placeholder="Tên hiển thị">
+      <input id="pfile" type="file" accept=".exe">
+      <button onclick="uploadPayload()">Tải lên</button>
+    </div>
+  </section>
+
+  <section>
+    <h2>Danh sách File EXE</h2>
+    <table id="payloads-table">
+      <thead><tr><th>ID</th><th>Tên</th><th>Tên File</th><th>Ngày tải</th><th>Hành động</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </section>
+</div>
+<script src="admin.js"></script>
+</body>
+</html>
