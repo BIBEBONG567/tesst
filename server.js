@@ -8,7 +8,8 @@ const cors = require('cors');
 const db = require('./db');
 
 const app = express();
-const PORT = 3000;
+// SỬA LẠI DÒNG NÀY: Ưu tiên lấy cổng của Render, nếu không có mới dùng 3000
+const PORT = process.env.PORT || 3000; 
 const JWT_SECRET = 'CHANGE_THIS_SECRET_IN_PROD_9f3a2c';
 const ADMIN_USER = 'admin';
 const ADMIN_PASS = 'admin123'; 
@@ -164,7 +165,5 @@ app.get('/api/payload/:id', (req, res) => {
   res.json({ name: payload.name, filename: payload.filename, data: fs.readFileSync(filePath).toString('base64') });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-    console.log(`[license-server] running on port ${PORT}`);
-});
+// SỬA LẠI DÒNG NÀY: Lắng nghe trên 0.0.0.0 để Render có thể truy cập
+app.listen(PORT, '0.0.0.0', () => console.log(`[license-server] running on port ${PORT}`));
